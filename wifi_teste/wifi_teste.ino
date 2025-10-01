@@ -1,13 +1,26 @@
 #include <WiFi.h>
-
+const String SSID = "iPhone";
+const String PSWD = "iot_sul_123";
 
  void setup() {
   Serial.begin(115200);
-  Serial.println("iniciando scan de redes Wi-Fi");
-
+  void scanLocalNetworks();
+  Serial.println("iniciando coneXão com rede WiFi");
+  WiFi.begin(SSID, PSWD);
+  while(WiFi.status() != WL_CONNECTED){
+    Serial.print(".");
+    delay(200);
+  }
+  Serial.println("\n Conectado!");
 }
 
 void loop() {
+
+
+}
+
+void scanLocalNetworks(){
+  Serial.println("iniciando scan de redes Wi-Fi");
   int number = WiFi.scanNetworks();
   delay(500);
   if(number == -1){
@@ -19,5 +32,4 @@ void loop() {
       Serial.printf("%d - %s | %d db\n", net, WiFi. SSID(net), WiFi.RSSI(net));
     }
   }
-
 }
