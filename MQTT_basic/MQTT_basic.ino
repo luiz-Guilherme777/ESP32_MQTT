@@ -16,32 +16,44 @@ void conectarWiFi();
 void setup() {
   Serial.begin(115200);
   conectarWiFi();
-  Serial.println("conectando ao broker...");
+  conectarBroker();
+}
+
+void loop() {
+  if(WiFi.status() != WL_CONNECTED){
+    Serial.println("tentando reconectar wifi: aguarde");
+    conectarWiFi();
+  }
+  if(!mqttClient.connected()){
+    Serial.println("tentando reconectar ao broker: aguarde");
+    conectarBroker();
+  }
+  mqttClient.publish("AulaIoTSul/Chat","o horario nao permite ");
+  delay(1000);
+
+
+  mqttClient.loop();
+}
+
+
+void conectarBroker(){
+    Serial.println("conectando ao broker...");
   mqttClient.setServer(BrokerUrl.c_str(),port);
   String userId = "tocomfome";
-  mqttClient.connect(userId.c_str());
   while(!mqttClient.connected()){
-    Serial.println("erro de conexão");
+    mqttClient.connect(userId.c_str());
+    Serial.println(".");
     delay(500);
   }
   Serial.println("conectado ao Broker!");
 }
 
-void loop() {
-  if(WiFi.status() != WL_CONNECTED){
-    Serial.println("tentando reconectar: aguarde");
-    conectarWiFi();
-  }
-  mqttClient.loop();
-}
-
-
 void conectarWiFi(){
   Serial.println("iniciando conexão com rede WiFi");
-  WiFi.begin(SSID, PSWD);
   while(WiFi.status() != WL_CONNECTED){
+    WiFi.begin(SSID, PSWD);
     Serial.print(".");
-    delay(200);
+    delay(2000);
   }
   Serial.println("\n Conectado!");
 }
